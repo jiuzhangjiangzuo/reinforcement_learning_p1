@@ -1,0 +1,6 @@
+future
+gym==0.7.0
+numpy
+scipy
+six
+-e .

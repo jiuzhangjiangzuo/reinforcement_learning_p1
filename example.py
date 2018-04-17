@@ -6,8 +6,10 @@ from __future__ import (absolute_import, division, print_function,
 from builtins import input
 
 import deeprl_p1.lake_envs as lake_env
+from deeprl_p1.rl import *
 import gym
 import time
+
 
 
 def run_random_policy(env):
@@ -38,7 +40,7 @@ def run_random_policy(env):
         nextstate, reward, is_terminal, debug_info = env.step(
             env.action_space.sample())
         env.render()
-        print('reward:',reward)
+        print('reward:{}'.format(reward))
         total_reward += reward
         num_steps += 1
 
@@ -46,6 +48,53 @@ def run_random_policy(env):
             break
 
         time.sleep(1)
+    return total_reward, num_steps
+
+
+def run_optimal_policy(env, opp):
+    """Run an optimal policy for the given environment.
+
+    Logs the total reward and the number of steps until the terminal
+    state was reached.
+
+    Parameters
+    ----------
+    env: gym.envs.Environment
+      Instance of an OpenAI gym.
+
+    opp: np.ndarray
+      Optimal Policy
+
+    Returns
+    -------
+    (float, int)
+      First number is the total undiscounted reward received. The
+      second number is the total number of actions taken before the
+      episode finished.
+    """
+    initial_state = env.reset()
+    env.render()
+    #time.sleep(1)  # just pauses so you can see the output
+
+    total_reward = 0
+    num_steps = 0
+    s = initial_state
+    gamma = 0.9
+
+    while True:
+        next_act = opp[s]
+        nextstate, reward, is_terminal, debug_info = env.step(next_act)
+        env.render()
+
+        total_reward += pow(gamma, num_steps) * reward
+        num_steps += 1
+
+        if is_terminal:
+            break
+
+        time.sleep(1)
+
+        s = nextstate
 
     return total_reward, num_steps
 
@@ -68,23 +117,28 @@ def print_model_info(env, state, action):
             % (state_type, nextstate, prob, reward))
 
 
+def plot_policy(policy, length):
+    grid = print_policy(policy, {lake_env.DOWN:'D', lake_env.LEFT:'L', lake_env.UP:'U', lake_env.RIGHT:'R'})
+    for i in range(length):
+        line = ""
+        for j in range(length):
+            line += grid[i*length+j]
+        print(line)
+
 def main():
-    # create the environment
-    # env = gym.make('FrozenLake-v0')
     env = gym.make('Deterministic-4x4-FrozenLake-v0')
+    gamma = 0.9
+    policy, value_func, improve_iteration, evalue_iteration = policy_iteration(env, gamma=gamma)
+    plot_policy(policy, 4)
+    print("improve_iteration: %d" % improve_iteration)
+    print("evalue_iteration: %d" % evalue_iteration)
+    run_optimal_policy(env, policy)
 
-    print(env)
-    print_env_info(env)
-    print_model_info(env, 0, lake_env.DOWN)
-    print_model_info(env, 1, lake_env.DOWN)
-    print_model_info(env, 14, lake_env.RIGHT)
-
-    input('Hit enter to run a random policy...')
-
-    total_reward, num_steps = run_random_policy(env)
-    print('Agent received total reward of: %f' % total_reward)
-    print('Agent took %d steps' % num_steps)
-
+    value_func, iteration_cnt = value_iteration(env, gamma=gamma)
+    policy = value_function_to_policy(env, gamma, value_func)
+    print("Value Iternation:%d" % iteration_cnt)
+    plot_policy(policy, 4)
+    run_optimal_policy(env, policy)
 
 if __name__ == '__main__':
     main()

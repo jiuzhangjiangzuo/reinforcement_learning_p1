@@ -127,6 +127,8 @@ def plot_policy(policy, length):
 
 def main():
     env = gym.make('Deterministic-4x4-FrozenLake-v0')
+    env = gym.make('Stochastic-4x4-FrozenLake-v0')
+
     gamma = 0.9
     policy, value_func, improve_iteration, evalue_iteration = policy_iteration(env, gamma=gamma)
     plot_policy(policy, 4)
@@ -139,6 +141,16 @@ def main():
     print("Value Iternation:%d" % iteration_cnt)
     plot_policy(policy, 4)
     run_optimal_policy(env, policy)
+
+    # env = gym.make('Stochastic-4x4-FrozenLake-v0')
+    # policy, value_func, improve_iteration, evalue_iteration = policy_iteration(env, gamma=gamma)
+    # plot_policy(policy, 4)
+    # print("improve_iteration: %d" % improve_iteration)
+    # print("evalue_iteration: %d" % evalue_iteration)
+    #
+    # value_func, iteration_cnt = value_iteration(env, gamma=gamma)
+    # policy = value_function_to_policy(env, gamma, value_func)
+    # print("Value Iternation:%d" % iteration_cnt)
 
 if __name__ == '__main__':
     main()

@@ -5,7 +5,7 @@ from __future__ import print_function, unicode_literals
 import numpy as np
 import time
 
-def evaluate_policy(env, gamma, policy, max_iterations=int(1e3), tol=1e-3):
+def evaluate_policy(env, gamma, policy, value_func, max_iterations=int(1e3), tol=1e-3):
     """Evaluate the value of a policy.
 
     See page 87 (pg 105 pdf) of the Sutton and Barto Second Edition
@@ -22,6 +22,8 @@ def evaluate_policy(env, gamma, policy, max_iterations=int(1e3), tol=1e-3):
       Discount factor, must be in range [0, 1)
     policy: np.array
       The policy to evaluate. Maps states to actions.
+    value_func: np.array
+      The value function array
     max_iterations: int
       The maximum number of iterations to run before stopping.
     tol: float
@@ -33,13 +35,12 @@ def evaluate_policy(env, gamma, policy, max_iterations=int(1e3), tol=1e-3):
       The value for the given policy and the number of iterations till
       the value function converged.
     """
-    v = np.zeros(env.nS)
     iterations = 0
-
+    v = value_func
     eval_converge = False
     while not eval_converge:
         iterations += 1
-        eval_converge = True
+        delta = 0
         # iterate through each state
         for s in range(env.nS):
             a = policy[s]
@@ -53,8 +54,9 @@ def evaluate_policy(env, gamma, policy, max_iterations=int(1e3), tol=1e-3):
             # update state value function
             old_v = v[s]
             v[s] = expected_value
-            if (abs(v[s] - old_v) > tol):
-                eval_converge = False
+            delta = max(delta, abs(v[s] - old_v))
+            if (delta < tol):
+                eval_converge = True
 
     return v, iterations
 
@@ -169,7 +171,7 @@ def policy_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
     policy_stable = False
 
     for i in range(max_iterations):
-        value_func, e_iter = evaluate_policy(env, gamma, policy, max_iterations, tol)
+        value_func, e_iter = evaluate_policy(env, gamma, policy, value_func, max_iterations, tol)
         policy_stable, policy = improve_policy(env, gamma, value_func, policy)
         improve_iteration += 1
         evalue_iteration += e_iter

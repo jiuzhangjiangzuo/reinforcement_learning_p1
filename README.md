@@ -13,7 +13,7 @@ If your shell is Bash or a Bourne variant, enable conda for the current user wit
 ```
 NOTE： 注意Andrew是我的用户名，请根据自己的提示信息进行修改 
 
-6. 输入命令行: git clone https://github.com/jiuzhangjiangzuo/reinforcement_learning_p1.git
+6. 输入命令行: git clone https://github.com/jiuzhangjiangzuo/reinforcement_learning_p1.git 或直接下载压缩包[link](https://github.com/jiuzhangjiangzuo/reinforcement_learning_p1/archive/master.zip)
 7. 输入命令行: cd reinforcement_learning_p1
 8. 输入命令行: pip install -r requirements.txt
 9. 测试是否可以运行: python example.py

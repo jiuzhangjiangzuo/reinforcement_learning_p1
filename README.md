@@ -12,7 +12,7 @@ If your shell is Bash or a Bourne variant, enable conda for the current user wit
 
     $ echo ". /Users/Andrew/anaconda3/etc/profile.d/conda.sh" >> ~/.bash_profile
 ```
-NOTE： 注意Andrew是我的用户名，请根据自己的提示信息进行修改 
+NOTE： 注意这是我环境给出的解决方案(里面的Andrew是我的用户名)，不同的机器可能会给出不同的方案，要仔细看执行conda activate rl_p1之后, terminal里面给出的到底是什么内容。 
 
 5. 输入命令行: git clone https://github.com/jiuzhangjiangzuo/reinforcement_learning_p1.git 或直接下载压缩包[link](https://github.com/jiuzhangjiangzuo/reinforcement_learning_p1/archive/master.zip)
 6. 输入命令行: cd reinforcement_learning_p1

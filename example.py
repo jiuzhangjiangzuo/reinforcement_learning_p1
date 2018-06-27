@@ -51,7 +51,7 @@ def run_random_policy(env):
     return total_reward, num_steps
 
 
-def run_optimal_policy(env, opp):
+def run_optimal_policy(env, opp, gamma=0.9):
     """Run an optimal policy for the given environment.
 
     Logs the total reward and the number of steps until the terminal
@@ -79,7 +79,7 @@ def run_optimal_policy(env, opp):
     total_reward = 0
     num_steps = 0
     s = initial_state
-    gamma = 0.9
+
 
     while True:
         next_act = opp[s]

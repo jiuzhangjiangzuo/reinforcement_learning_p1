@@ -244,5 +244,4 @@ def print_policy(policy, action_names):
     for action_num, action_name in action_names.items():
         np.place(str_policy, policy == action_num, action_name)
 
-    print(str_policy)
     return str_policy

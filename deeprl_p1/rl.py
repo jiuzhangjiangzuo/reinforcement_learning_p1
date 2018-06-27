@@ -55,8 +55,8 @@ def evaluate_policy(env, gamma, policy, value_func, max_iterations=int(1e3), tol
             old_v = v[s]
             v[s] = expected_value
             delta = max(delta, abs(v[s] - old_v))
-            if (delta < tol):
-                eval_converge = True
+        if (delta < tol):
+            eval_converge = True
 
     return v, iterations
 

@@ -137,11 +137,18 @@ def cal_value_iteration(env, gamma=0.9):
 
 def cal_policy_iteration(env, gamma=0.9):
     policy, value_func, improve_iteration, evalue_iteration = policy_iteration(env, gamma=gamma)
+    print("Policy iteration:%d" % improve_iteration)
     print("Show me the policy:")
     plot_policy(policy, 4)
     print("")
-    print("Policy iteration:%d" % improve_iteration)
     run_optimal_policy(env, policy)
+
+def compare_performance(env, gamma=0.9):
+    value_func, iteration_cnt = value_iteration(env, gamma=gamma)
+    policy = value_function_to_policy(env, gamma, value_func)
+    print("Value Iternation:%d" % iteration_cnt)
+    policy, value_func, improve_iteration, evalue_iteration = policy_iteration(env, gamma=gamma)
+    print("Policy iteration:%d" % improve_iteration)
 
 def main():
     env = gym.make('Deterministic-4x4-FrozenLake-v0')
@@ -149,6 +156,7 @@ def main():
 
     cal_value_iteration(env)
     #cal_policy_iteration(env)
+    #compare_performance(env)
 
 
 if __name__ == '__main__':

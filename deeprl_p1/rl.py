@@ -37,8 +37,9 @@ def evaluate_policy(env, gamma, policy, value_func, max_iterations=int(1e3), tol
     """
     iterations = 0
     v = value_func
-    eval_converge = False
-    while not eval_converge:
+
+    for i in range(max_iterations):
+        v_old = v.copy()
         iterations += 1
         delta = 0
         # iterate through each state
@@ -49,58 +50,21 @@ def evaluate_policy(env, gamma, policy, value_func, max_iterations=int(1e3), tol
                 if is_terminal == True:
                     expected_value +=  prob * (reward + gamma * 0)
                 else:
-                    expected_value +=  prob * (reward + gamma * v[nextstate])
+                    expected_value +=  prob * (reward + gamma * v_old[nextstate])
 
             # update state value function
             old_v = v[s]
             v[s] = expected_value
             delta = max(delta, abs(v[s] - old_v))
+
+        # converage
         if (delta < tol):
-            eval_converge = True
+            break
 
     return v, iterations
 
 
-def value_function_to_policy(env, gamma, value_function):
-    """Output action numbers for each state in value_function.
-
-    Parameters
-    ----------
-    env: gym.core.Environment
-      Environment to compute policy for. Must have nS, nA, and P as
-      attributes.
-    gamma: float
-      Discount factor. Number in range [0, 1)
-    value_function: np.ndarray
-      Value of each state.
-
-    Returns
-    -------
-    np.ndarray
-      An array of integers. Each integer is the optimal action to take
-      in that state according to the environment dynamics and the
-      given value function.
-    """
-    policy = np.zeros(env.nS, dtype='int')
-    for s in range(env.nS):
-        max_value = None
-        # if take this action, calculate the expected reward
-        for a in range(env.nA):
-            expected_value = 0.0
-            for prob, nextstate, reward, is_terminal in env.P[s][a]:
-                if is_terminal:
-                    expected_value +=  prob * (reward + gamma * 0)
-                else:
-                    expected_value +=  prob * (reward + gamma * value_function[nextstate])
-            # Record the maximum value and corresponding action
-            if max_value is None or max_value < expected_value:
-                max_value = expected_value
-                policy[s] = a
-
-    return policy
-
-
-def improve_policy(env, gamma, value_func, policy):
+def improve_policy(env, gamma, value_function, policy):
     """Given a policy and value function improve the policy.
 
     See page 87 (pg 105 pdf) of the Sutton and Barto Second Edition
@@ -125,14 +89,27 @@ def improve_policy(env, gamma, value_func, policy):
     bool, np.ndarray
       Returns true if policy changed. Also returns the new policy.
     """
-    old_policy = policy
-    new_policy = value_function_to_policy(env, gamma, value_func)
-
     policy_stable = True
     for s in range(env.nS):
-        if old_policy[s] != new_policy[s]:
+        old_action = policy[s]
+        max_value = None
+        # if take this action, calculate the expected reward
+        for a in range(env.nA):
+            expected_value = 0.0
+            for prob, nextstate, reward, is_terminal in env.P[s][a]:
+                if is_terminal:
+                    expected_value +=  prob * (reward + gamma * 0)
+                else:
+                    expected_value +=  prob * (reward + gamma * value_function[nextstate])
+            # Record the maximum value and corresponding action
+            if max_value is None or max_value < expected_value:
+                max_value = expected_value
+                policy[s] = a
+        if old_action != policy[s]:
             policy_stable = False
-    return policy_stable, new_policy
+
+    return policy_stable, policy
+
 
 
 def policy_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
@@ -206,9 +183,12 @@ def value_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
       The value function and the number of iterations it took to converge.
     """
     V = np.zeros(env.nS)
+    policy = np.zeros(env.nS, dtype='int')
+
     iteration_cnt = 0
     for i in range(max_iterations):
         delta = 0
+        V_old = V.copy()
         for s in range(env.nS):
             v = V[s]
             max_value = None
@@ -218,8 +198,13 @@ def value_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
                     if is_terminal:
                         expectation += prob * (reward + gamma * 0)
                     else:
-                        expectation += prob * (reward + gamma * V[nextstate])
-                max_value = expectation if max_value is None else max(max_value, expectation)
+                        expectation += prob * (reward + gamma * V_old[nextstate])
+                #max_value = expectation if max_value is None else max(max_value, expectation)
+
+                if max_value is None or max_value < expectation:
+                    max_value = expectation
+                    policy[s] = a
+
             V[s] = max_value
             delta = max(delta, abs(v - V[s]))
         iteration_cnt += 1
@@ -227,8 +212,7 @@ def value_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
             break
 
     V[env.nS-1] = 0
-    return V, iteration_cnt
-
+    return V, policy, iteration_cnt
 
 def print_policy(policy, action_names):
     """Print the policy in human-readable format.

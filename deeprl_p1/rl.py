@@ -55,7 +55,7 @@ def value_function_to_policy(env, gamma, value_function):
       An array of integers. Each integer is the optimal action to take
       in that state according to the environment dynamics and the
       given value function.
-    """    
+    """
     return np.zeros(env.nS, dtype='int')
 
 
@@ -144,8 +144,7 @@ def value_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
 
     Returns
     -------
-    np.ndarray, iteration
-      The value function and the number of iterations it took to converge.
+    value functions (numpy array), policy (numpy array), iteration (int)
     """
     return np.zeros(env.nS), 0
 

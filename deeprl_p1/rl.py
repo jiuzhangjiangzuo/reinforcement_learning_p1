@@ -179,8 +179,7 @@ def value_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
 
     Returns
     -------
-    np.ndarray, iteration
-      The value function and the number of iterations it took to converge.
+    value functions (numpy array), policy (numpy array), iteration (int)
     """
     V = np.zeros(env.nS)
     policy = np.zeros(env.nS, dtype='int')

@@ -53,9 +53,8 @@ def evaluate_policy(env, gamma, policy, value_func, max_iterations=int(1e3), tol
                     expected_value +=  prob * (reward + gamma * v_old[nextstate])
 
             # update state value function
-            old_v = v[s]
             v[s] = expected_value
-            delta = max(delta, abs(v[s] - old_v))
+            delta = max(delta, abs(v[s] - v_old[s]))
 
         # converage
         if (delta < tol):

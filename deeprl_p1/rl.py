@@ -189,7 +189,6 @@ def value_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
         delta = 0
         V_old = V.copy()
         for s in range(env.nS):
-            v = V[s]
             max_value = None
             for a in range(env.nA):
                 expectation = 0
@@ -205,7 +204,7 @@ def value_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
                     policy[s] = a
 
             V[s] = max_value
-            delta = max(delta, abs(v - V[s]))
+            delta = max(delta, abs(V_old[s] - V[s]))
         iteration_cnt += 1
         if delta < tol:
             break

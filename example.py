@@ -153,9 +153,9 @@ def main():
     env = gym.make('Deterministic-4x4-FrozenLake-v0')
     #env = gym.make('Stochastic-4x4-FrozenLake-v0')
 
-    #cal_value_iteration(env)
+    cal_value_iteration(env)
     #cal_policy_iteration(env)
-    compare_performance(env)
+    #compare_performance(env)
 
 
 if __name__ == '__main__':

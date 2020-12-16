@@ -208,7 +208,6 @@ def value_iteration(env, gamma, max_iterations=int(1e3), tol=1e-3):
         if delta < tol:
             break
 
-    V[env.nS-1] = 0
     return V, policy, iteration_cnt
 
 def print_policy(policy, action_names):
